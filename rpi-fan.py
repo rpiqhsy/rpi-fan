@@ -34,6 +34,8 @@ GPIO.cleanup()
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(PIN_FAN, GPIO.OUT)
 
+strip = apa102.APA102(num_led=4, global_brightness=20, mosi=17, sclk=4, order='rgb')
+
 def get_cpu_temp():
     temp_file = open( "/sys/class/thermal/thermal_zone0/temp" )
     cpu_temp = temp_file.read()
@@ -53,7 +55,7 @@ def get_scaling_max_freq():
     return float(scaling_max_freq) / 1000
 
 def led_show(temp):
-    strip = apa102.APA102(num_led=4, global_brightness=20, mosi=17, sclk=4, order='rgb')
+    global strip
     c_temp = [0x000008, 0x000800, 0x080800, 0x080008, 0x080000]
 
     c_temp_i = 4
@@ -125,7 +127,7 @@ if __name__ == "__main__":
             else:
                 p.ChangeDutyCycle(speed)
 
-            print("TEMP: %.2f, FREQ: %d/%d MHz, FAN SPEED: %d%%" % (current_temp, scaling_cur_freq, scaling_max_freq, speed))
+            print("TEMP: %.2f, FREQ: %d/%d MHz, FAN SPEED: %d%%       " % (current_temp, scaling_cur_freq, scaling_max_freq, speed),end="\r")
             led_show(current_temp)
             #time.sleep(3)
 
